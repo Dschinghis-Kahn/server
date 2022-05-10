@@ -28,7 +28,6 @@ import net.dschinghiskahn.server.net.INetworkData;
 import net.dschinghiskahn.server.net.TcpNetworkData;
 import net.dschinghiskahn.server.net.UdpNetworkData;
 
-@SuppressWarnings({ "resource", "PMD" })
 public class ServerTest implements IObjectReceiver<INetworkData> {
 
     public static final int PORT = 50000;
@@ -87,12 +86,21 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
     public void connection() {
         Logger.getLogger(getClass()).info("Running test: connection()");
         boolean result = true;
+        Socket socket = null;
         try {
-            new Socket(HOSTNAME, PORT);
+            socket = new Socket(HOSTNAME, PORT);
         } catch (UnknownHostException e) {
             result = false;
         } catch (IOException e) {
             result = false;
+        } finally {
+        	if(socket != null) {
+        		try {
+					socket.close();
+				} catch (IOException e) {
+					// Intentionally left empty.
+				}
+        	}
         }
         Assert.assertTrue(result);
     }
@@ -101,14 +109,23 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
     public void manyConnections() {
         Logger.getLogger(getClass()).info("Running test: manyConnections()");
         boolean result = true;
+        Socket socket = null;
         try {
             for (int i = 0; i < 1000; i++) {
-                new Socket(HOSTNAME, PORT);
+            	socket = new Socket(HOSTNAME, PORT);
             }
         } catch (UnknownHostException e) {
             result = false;
         } catch (IOException e) {
             result = false;
+        } finally {
+        	if(socket != null) {
+        		try {
+					socket.close();
+				} catch (IOException e) {
+					// Intentionally left empty.
+				}
+        	}
         }
         Assert.assertTrue(result);
     }
@@ -116,11 +133,20 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
     @Test(timeout = 3000)
     public void wrongPort() {
         Logger.getLogger(getClass()).info("Running test: wrongPort()");
+        Socket socket = null;
         try {
-            new Socket(HOSTNAME, PORT + 1);
+        	socket = new Socket(HOSTNAME, PORT + 1);
         } catch (IOException e) {
             Assert.assertTrue(true);
             return;
+        } finally {
+        	if(socket != null) {
+        		try {
+					socket.close();
+				} catch (IOException e) {
+					// Intentionally left empty.
+				}
+        	}
         }
         Assert.assertTrue(false);
     }
@@ -128,13 +154,22 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
     @Test(timeout = 1000)
     public void wrongUrl() {
         Logger.getLogger(getClass()).info("Running test: wrongUrl()");
+        Socket socket = null;
         try {
-            new Socket("192.168.1.", PORT);
+        	socket = new Socket("192.168.1.", PORT);
         } catch (UnknownHostException e) {
             Assert.assertTrue(true);
             return;
         } catch (IOException e) {
             Assert.assertTrue(false);
+        } finally {
+        	if(socket != null) {
+        		try {
+					socket.close();
+				} catch (IOException e) {
+					// Intentionally left empty.
+				}
+        	}
         }
         Assert.assertTrue(false);
     }
@@ -152,12 +187,14 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
 
         Assert.assertTrue(networkData instanceof UdpNetworkData);
         Assert.assertFalse(networkData instanceof TcpNetworkData);
+        
+        socket.close();
     }
 
     @Test(timeout = 1000)
     public void tcpConnectionType() throws InterruptedException, IOException {
         Logger.getLogger(getClass()).info("Running test: tcpConnectionType()");
-        new Socket(HOSTNAME, PORT);
+        Socket socket = new Socket(HOSTNAME, PORT);
 
         while (networkData == null) {
             Thread.sleep(1);
@@ -165,6 +202,8 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
 
         Assert.assertTrue(networkData instanceof TcpNetworkData);
         Assert.assertFalse(networkData instanceof UdpNetworkData);
+        
+        socket.close();
     }
 
     @Test(timeout = 5000)
@@ -192,6 +231,8 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
         InputStream inputStream = ((TcpNetworkData) networkData).getTcpInputStream();
         int result = inputStream.read();
         Assert.assertEquals(15, result);
+        
+        socket.close();
     }
 
     @Test(timeout = 1000)
@@ -212,6 +253,8 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
         int result = inputStream.read();
 
         Assert.assertTrue(result == 15);
+        
+        socket.close();
     }
 
     @Test(timeout = 1000)
@@ -232,6 +275,8 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
         String result = (String) inputStream.readObject();
 
         Assert.assertTrue("15".equals(result));
+        
+        socket.close();
     }
 
     @Test(timeout = 1000)
@@ -269,6 +314,8 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
             Thread.sleep(10);
         }
         Assert.assertTrue(getRead().equals("remote_test"));
+        
+        socket.close();
     }
 
 }

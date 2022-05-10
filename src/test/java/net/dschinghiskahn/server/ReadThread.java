@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-@SuppressWarnings("PMD")
 public class ReadThread extends Thread {
 
     private final DataInputStream inputStream;
