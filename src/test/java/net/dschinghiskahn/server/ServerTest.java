@@ -113,7 +113,7 @@ public class ServerTest implements IObjectReceiver<INetworkData> {
         Assert.assertTrue(result);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 3000)
     public void wrongPort() {
         Logger.getLogger(getClass()).info("Running test: wrongPort()");
         try {

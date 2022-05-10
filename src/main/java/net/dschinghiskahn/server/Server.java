@@ -154,6 +154,11 @@ public class Server {
         }
 
         try {
+        	socketSelector.close();
+        } catch (IOException e) {
+            logger.error("Error closing SocketSelector!", e);
+        }
+        try {
             tcpChannel.close();
         } catch (IOException e) {
             logger.error("Error closing TCP channel!", e);
