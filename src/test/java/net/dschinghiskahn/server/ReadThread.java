@@ -3,8 +3,6 @@ package net.dschinghiskahn.server;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
 public class ReadThread extends Thread {
 
     private final DataInputStream inputStream;
@@ -22,7 +20,7 @@ public class ReadThread extends Thread {
             try {
                 parent.setRead(inputStream.readUTF());
             } catch (IOException e) {
-                Logger.getRootLogger().error("Error reading data!", e);
+                // Intentionally left empty
             }
         }
     }
